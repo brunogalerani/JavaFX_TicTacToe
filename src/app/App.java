@@ -1,7 +1,12 @@
 package app;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -16,6 +21,10 @@ public class App extends Application {
 	protected static Boolean gameEnded = false;
 	private static List<Sequences> sequences = new ArrayList<>();
 	private Tile[][] gameBoard = new Tile[3][3];
+	
+	private static Socket socket;
+	private static PrintWriter writer;
+	private static Scanner reader;
 	
 	private Parent createContent() {
 		Pane root = new Pane();
@@ -62,14 +71,43 @@ public class App extends Application {
 	public void start(Stage stage) throws Exception {
 
 		stage.setScene(new Scene(createContent()));
+		networkConfig();
 
 		stage.show();
 
+	}
+	
+	public void networkConfig() {
+		try {
+			socket = new Socket("127.0.0.1", 5000);
+			writer = new PrintWriter(socket.getOutputStream());
+			reader = new Scanner(socket.getInputStream());
+			new Thread(new ListenServer()).start();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
+	public class ListenServer implements Runnable {
+
+		@Override
+		public void run() {
+			try {
+				String text;
+				while ((text = reader.nextLine()) != null) {
+					
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
 	
 }
